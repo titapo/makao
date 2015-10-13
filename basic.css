@@ -1,0 +1,140 @@
+*
+{
+    padding: 0px;
+    margin: 0px;
+}
+
+body
+{
+    background-color: #113;
+    padding: 10px;
+    font-family: "Verdana";
+}
+a
+{
+    cursor:pointer;
+    opacity: 0.8;
+    transition: all 200ms;
+}
+
+a:hover
+{
+    opacity: 1;
+}
+
+
+div#base-area a.link
+{
+    color: #fff;
+    text-decoration: underline;
+}
+
+div.entity
+{
+    background-color: #224;
+    border: 1px solid #339;
+    margin: 10px;
+    padding: 5px;
+    min-width: 10vw;
+}
+
+div.entity .title
+{
+    color: #ccf;
+}
+
+div.entity div.entity-content
+{
+    padding: 10px;
+    background-color: #334;
+    color: #bbe;
+}
+
+div.entity a.action
+{
+    padding: 3px;
+    margin: 5px;
+    text-decoration: none;
+    border: 1px solid #444;
+    color: #77a;
+    display: inline-block;
+    
+}
+
+div .entity a.action:hover
+{
+    background-color: #56a;
+    color: #ccf;
+}
+
+a.action.error
+{
+    background-color: #922;
+    border: 1px solid #700;
+    padding: 3px 10px;
+    margin: 12px;
+}
+
+a.action.ok
+{
+    background-color: #292;
+    border: 1px solid #070;
+    padding: 3px 10px;
+    margin: 12px;
+}
+
+div#win-layer
+{
+    display: none;
+    z-index: 100;
+    background-color: rgba(200,200,200,0.4); 
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+
+div.window
+{
+    z-index: 1000;
+    position: absolute;
+    top: 10px;
+    margin: 100px 100px;
+
+    background: #448;
+    border: 1px solid #ccf;
+    box-shadow: 0px 0px 10px #222;
+}
+
+div.window .title
+{
+    padding: 15px;
+    color: #eef;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    background: #337;
+
+}
+div.window .body
+{
+    padding: 22px;
+}
+div.window .foot
+{
+    padding: 15px;
+    color: #eef;
+    font-size: 1.1em;
+    margin-top: 10px;
+    background: #337;
+}
+
+div.window input
+{
+    margin: 5px;
+}
+
+div.window input[type=text]
+{
+    margin: border: 1px solid #ccf;
+}
