@@ -4,23 +4,24 @@ function TestCase(name, method)
     this.method = method;
     this.fails = 0;
     this.runned = false;
+    this.isExceptionExpected = false;
 
     this.run = function()
     {
         console.log("running test case: " + this.name);
         this.fails = 0;
-        /*
         try
         {
-        */
             this.method(this);
-            /*
+
+            if (this.isExceptionExpected)
+                this.fail("exception was expected!");
         }
         catch (ex)
         {
-            this.fail("exception thrown: " + ex);
+            if (!this.isExceptionExpected)
+                this.fail("exception thrown: " + ex);
         }
-        */
         this.runned = true;
     }
 
@@ -50,7 +51,7 @@ function TestCase(name, method)
     this.assertEquals = function(first, second)
     {
         if (first != second)
-            this.fail("comparison failed: " + first + " != " + second);
+            this.fail("comparison failed: '" + first + "' != '" + second + "'");
     }
 
     this.assertIsInstance = function(obj, classRef)
@@ -64,6 +65,11 @@ function TestCase(name, method)
         console.log(this.name + " | " + message);
         document.write("<div style='color:#c33'>  " + this.name + " | " + message + "</div>");
         ++this.fails;
+    }
+
+    this.expectThrow = function()
+    {
+        this.isExceptionExpected = true;
     }
 }
 
