@@ -67,7 +67,7 @@ function Entity(name, type, base)
     }
     this.clone = function()
     {
-        return new Entity(name, type, base);
+        return new Entity(this.name, this.type, this.base);
     }
 }
 
@@ -79,7 +79,7 @@ function Leaf(name, content = "", type = "leaf", base = 0)
 
     this.display = function(actions)
     {
-        return this.displayBrief() + " (" + this.type + ")";
+        return this.displayBrief(actions) + " (" + this.type + ")";
     }
 
     this.displayBrief = function(actions)
@@ -97,7 +97,7 @@ function Leaf(name, content = "", type = "leaf", base = 0)
     }
     this.clone = function()
     {
-        return new Leaf(name, content, type, base);
+        return new Leaf(this.name, this.content, this.type, this.base);
     }
 }
 Leaf.prototype = Object.create(Entity.prototype);
@@ -219,10 +219,9 @@ function Node(name, type = "node", base = 0)
 
     this.clone = function()
     {
-        var node = new Node(name, type, base);
+        var node = new Node(this.name, this.type, this.base);
         for (var i = 0; i < this.children.length; ++i)
         {
-            console.log(this.children[i]);
             node.add(this.children[i].clone())
         }
 
