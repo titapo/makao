@@ -86,7 +86,6 @@ function updateChild(childName)
 
         if (child instanceof Leaf)
             child.content = this.inputs["value"].value;
-            
 
         DisplayActualNode();
         return true;
@@ -249,7 +248,7 @@ function Init()
     console.log("makao::Init()");
     // tree generation
     rootNode = GenerateTree();
-    
+
     // actions for tree handling/display
     globalActionList = CreateActionList();
 

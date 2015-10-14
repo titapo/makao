@@ -17,7 +17,7 @@
                     {
                         var leaf = new Leaf("a", "b");
                         test.assertEquals(leaf.content, "b");
-                    })); 
+                    }));
 
             suite.add(new TestCase("leaf clone", function(test)
                     {
@@ -27,11 +27,11 @@
                         test.assertEquals(copy.type, "leaf");
                         test.assertEquals(copy.base, 0);
                         test.assertEquals(copy.content, "b");
-                    })); 
+                    }));
 
             suite.add(new TestCase("generate leaf output", function(test)
                     {
-                        var leaf = new Leaf("myLeafName", "myLeafValue"); 
+                        var leaf = new Leaf("myLeafName", "myLeafValue");
                         var out = leaf.generateOutput();
                         test.assertEquals(
                             '{"name":"myLeafName","type":"leaf","content":"myLeafValue"}', out);
@@ -45,7 +45,7 @@
                         test.assertEquals(leaf.type, "leaf");
                         test.assertEquals(leaf.base, 0);
                         test.assertEquals(leaf.content, "myLeafValue");
-                    })); 
+                    }));
 
             // node tests
             suite.add(new TestCase("add and remove child", function(test)
@@ -58,7 +58,7 @@
                         node.remove("a");
                         got = node.getChild("a");
                         test.assertEquals(undefined, got);
-                    })); 
+                    }));
             suite.add(new TestCase("node clone", function(test)
                     {
                         var node = new Node("testNode");
@@ -72,11 +72,11 @@
                         test.assertEquals(copy.type, "node");
                         test.assertEquals(copy.base, 0);
                         test.assertEquals(copy.children[0].name, "a");
-                    })); 
+                    }));
 
             suite.add(new TestCase("generate node output", function(test)
                     {
-                        var node = new Node("myNode"); 
+                        var node = new Node("myNode");
                         node.add(new Leaf("leaf", "val"));
                         var out = node.generateOutput();
                         test.assertEquals(
@@ -91,7 +91,7 @@
                         test.assertEquals(node.type, "node");
                         test.assertEquals(node.base, 0);
                         test.assertEquals(node.children.length, 0);
-                    })); 
+                    }));
 
             suite.add(new TestCase("create node from json", function(test)
                     {
@@ -106,10 +106,10 @@
                         test.assertEquals(node.children[0].content, "val");
                         test.assertEquals(node.children[0].type, "leaf");
                         test.assertEquals(node.children[0].base, node);
-                    })); 
+                    }));
             suite.add(new TestCase("create embed node from json", function(test)
                     {
-                        var input = 
+                        var input =
                         '{"name":"myNode","type":"node","children":'
                         + '['
                         + '{"name":"leafName","type":"leaf","content":"val"},'
@@ -142,34 +142,34 @@
                         test.assertEquals(node.children[1].children[0].type, "leaf");
                         test.assertEquals(node.children[1].children[0].base, node.children[1]);
                         test.assertEquals(node.children[1].children[0].content, "2");
-                    })); 
+                    }));
 
             // variables test
             suite.add(new TestCase("link-leaf test", function(test)
                     {
                         var link = new LinkLeaf("mypage", "example.com");
                         test.assertEquals(link.displayBrief(), "<a target='_blank' href='example.com'>mypage</a> ")
-                    })); 
+                    }));
 
             suite.add(new TestCase("enum-leaf", function(test)
                     {
                         var options = ["red", "green", "blue"];
                         var leaf = new EnumLeaf("mycolor", options, "green");
                         test.assertEquals(leaf.content, "green");
-                    })); 
+                    }));
 
             suite.add(new TestCase("enum-leaf invalid initialization", function(test)
                     {
                         var options = ["red", "green", "blue"];
                         test.expectThrow();
                         var leaf = new EnumLeaf("mycolor", options, "yellow");
-                    })); 
+                    }));
 
             suite.add(new TestCase("enum-leaf invalid options given", function(test)
                     {
                         test.expectThrow();
                         var leaf = new EnumLeaf("mycolor", "this is invalid", "yellow");
-                    })); 
+                    }));
 
             suite.run();
         </script>

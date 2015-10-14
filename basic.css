@@ -58,7 +58,6 @@ div.entity a.action
     border: 1px solid #444;
     color: #77a;
     display: inline-block;
-    
 }
 
 div .entity a.action:hover
@@ -87,7 +86,7 @@ div#win-layer
 {
     display: none;
     z-index: 100;
-    background-color: rgba(200,200,200,0.4); 
+    background-color: rgba(200,200,200,0.4);
     width: 100vw;
     height: 100vh;
     position: fixed;

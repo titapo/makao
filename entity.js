@@ -91,7 +91,7 @@ function Leaf(name, content = "", type = "leaf", base = 0)
     this.generateOutput = function()
     {
         var copy = this.clone();
-        delete copy.base; 
+        delete copy.base;
 
         return JSON.stringify(copy);
     }
@@ -190,7 +190,7 @@ function Node(name, type = "node", base = 0)
         var attributes = ""
         for (var key in this)
         {
-            if (key === "base" || key === "children" 
+            if (key === "base" || key === "children"
                 || typeof(this[key]) === "function")
                 continue;
 
@@ -250,12 +250,12 @@ function createFromJson(json)
             for (var i = 0; i < json.children.length; ++i)
             {
                 var child = json.children[i];
-                node.add(createFromJson(child)); 
+                node.add(createFromJson(child));
             }
 
             return node;
         }
         default:
-            throw "Invalid type: '" + json.type + "'"; 
+            throw "Invalid type: '" + json.type + "'";
     }
 }

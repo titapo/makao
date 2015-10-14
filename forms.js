@@ -49,7 +49,7 @@ function Window(title)
         return "<div id='" + this.windowId + "'class='window'>"
                 + "<p class='title'>" + this.title + "</p>"
                 + "<div class='body'>"+ this.content + "</div>"
-                + "<div class='foot'>" 
+                + "<div class='foot'>"
                     + "<a class='action error' onclick='hideLayer(\"" + layerId + "\")'>close</a>"
                 + "</div>"
             + "</div>";
