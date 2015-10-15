@@ -51,7 +51,26 @@ function TestCase(name, method)
     this.assertEquals = function(first, second)
     {
         if (first != second)
+        {
+            this._findAndLogStringDifference(first, second)
             this.fail("comparison failed: '" + first + "' != '" + second + "'");
+        }
+    }
+
+    this._findAndLogStringDifference = function(first, second)
+    {
+        if (typeof(first) !== 'string')
+            return;
+
+        for (var i = 0; i < first.length; ++i)
+        {
+            console.log("#" + i);
+            if (first[i] === second[i])
+                continue;
+
+            break;
+        }
+        console.log("position:" + i + ", '" + first[i] + "' != '" + second[i]+ "'");
     }
 
     this.assertIsInstance = function(obj, classRef)
