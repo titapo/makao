@@ -23,3 +23,12 @@ function EnumLeaf(name, options/*?*/, value)
     Leaf.call(this, name, value, "enum-leaf");
 }
 EnumLeaf.prototype = Object.create(Leaf.prototype);
+
+function TextLeaf(name, content)
+{
+    if (!(options instanceof Array))
+        throw "TextLeaf() expects Array as option";
+
+    Leaf.call(this, name, content, "text-leaf");
+}
+TextLeaf.prototype = Object.create(Leaf.prototype);

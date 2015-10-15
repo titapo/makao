@@ -68,7 +68,74 @@ function FormField(label, name, value = "")
     this.type = "text";
     this.validator = null;
     this.value = value;
+
+    this._displayLabel = function()
+    {
+        if (this.label.length > 0)
+            return this.label + ": ";
+
+        return "";
+    }
+
+    this.display = function()
+    {
+        return this._displayLabel()
+            + "<input type='" + this.type + "' name='" + this.name + "' value='" + this.value + "' />";
+    }
+
+    this.setValue = function(value)
+    {
+        if (this.validator !== null)
+        {
+            if (!this.validator(value))
+                throw "Validation error of '" + name +"' field";
+        }
+
+        this.value = value;
+    }
 }
+
+function TextFormField(label, name, value = "")
+{
+    FormField.call(this, label, name, value);
+    this.type = "textarea";
+
+    this.display = function()
+    {
+        return this._displayLabel() + "<br />"
+            + "<textarea name='" + this.name + "'>" + this.value + "</textarea>";
+    }
+}
+TextFormField.prototype = Object.create(FormField.prototype);
+
+/**
+ * optionMap
+ * [identifier] => [label]
+ * key/identifier must be unique
+ * */
+function RadioFormField(label, name, optionMap)
+{
+    if (!(optionMap instanceof Object))
+        throw "RadioFormField() expects Object as optionMap";
+
+    FormField.call(this, label, name, "");
+    this.type = "radio";
+    this.optionMap = optionMap;
+
+    this.display = function()
+    {
+        var out = this._displayLabel();
+            out += "<br />";
+        for (var key in this.optionMap)
+        {
+            out += "<input type='" + this.type + "' name='" + this.name + "' value='" + key + "' /> ";
+            out += this.optionMap[key] + "<br />";
+        }
+
+        return out;
+    }
+}
+RadioFormField.prototype = Object.create(FormField.prototype);
 
 function Form(title)
 {
@@ -89,11 +156,7 @@ function Form(title)
         var out = "";
         for (var key in this.inputs)
         {
-            var field = this.inputs[key];
-            if (field.label.length > 0)
-                out += field.label + ": ";
-
-            out += "<input type='" + field.type + "' name='" + field.name + "' value='" +field.value + "'/>";
+            out += this.inputs[key].display();
             out += "<br />";
         }
 

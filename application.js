@@ -157,7 +157,8 @@ function generateNodeOutput()
 {
 
     var win = new Window(actualNode.name + " output");
-    win.setContent("<textarea>" + actualNode.generateOutput() + "</textarea>");
+    var field = new TextFormField("JSON output", "output", actualNode.generateOutput());
+    win.setContent(field.display());
 
     var layer = new Layer("win-layer");
     layer.displayWindow(win);
@@ -166,7 +167,7 @@ function generateNodeOutput()
 function loadNode()
 {
     var form = new Form("Load node from user");
-    form.addInput(new FormField("JSON input", "json"));
+    form.addInput(new TextFormField("JSON input", "json"));
     form.submit = function (values)
     {
         var json = this.inputs["json"].value;

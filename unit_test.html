@@ -171,6 +171,39 @@
                         var leaf = new EnumLeaf("mycolor", "this is invalid", "yellow");
                     }));
 
+            // form field test
+            suite.add(new TestCase("basic form field", function(test)
+                    {
+                        var field = new FormField("Your name", "username", "John");
+                        test.assertEquals(field.display(),
+                            "Your name: <input type='text' name='username' value='John' />");
+                        field.setValue("Red");
+                    }));
+
+            suite.add(new TestCase("form field and validator", function(test)
+                    {
+                        var field = new FormField("Your name", "username", "John");
+                        field.validator = function(input) { return input === "Green"}
+                        field.setValue("Green");
+                        test.assertEquals(field.value, "Green");
+
+                        test.expectThrow();
+                        field.setValue("Red");
+                    }));
+
+            suite.add(new TestCase("basic form field", function(test)
+                    {
+                        var field = new RadioFormField("Favourite color", "color",
+                            {"red":"Red", "green":"Green", "blue":"Blue"});
+                        test.assertEquals(field.display(),
+                            "Favourite color: <br />"
+                           + "<input type='radio' name='color' value='red' /> Red<br />"
+                           + "<input type='radio' name='color' value='green' /> Green<br />"
+                           + "<input type='radio' name='color' value='blue' /> Blue<br />"
+                            );
+                        // field.setValue("Red"); TODO check validation
+                    }));
+
             suite.run();
         </script>
     </body>
