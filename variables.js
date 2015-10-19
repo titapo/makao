@@ -2,6 +2,9 @@
 
 function LinkLeaf(name, content)
 {
+    if (!(this instanceof LinkLeaf))
+        return new LinkLeaf(name, content);
+
     Leaf.call(this, name, content, "link-leaf");
     this.displayBrief = function(actions = null)
     {
@@ -9,9 +12,13 @@ function LinkLeaf(name, content)
             + (actions?actions.execute("child-modify", this):"");
     }
 }
+LinkLeaf.prototype = Object.create(Leaf.prototype);
 
-function EnumLeaf(name, options/*?*/, value)
+function EnumLeaf(name, options = [""]/*?*/, value = "")
 {
+    if (!(this instanceof EnumLeaf))
+        return new EnumLeaf(name, options, value);
+
     if (!(options instanceof Array))
         throw "EnumLeaf() expects Array as option";
 
@@ -26,9 +33,43 @@ EnumLeaf.prototype = Object.create(Leaf.prototype);
 
 function TextLeaf(name, content)
 {
-    if (!(options instanceof Array))
-        throw "TextLeaf() expects Array as option";
+    if (!(this instanceof TextLeaf))
+        return new TextLeaf(name, content);
 
     Leaf.call(this, name, content, "text-leaf");
+    this.displayBrief = function(actions)
+    {
+        return this.name + ": " + actions.execute("child-modify", this)
+            + "<p><pre>" + this.content + "</pre></p>";
+    }
+
+    this.createForm = function(title)
+    {
+        var form = new Form(title);
+        form.addInput(new FormField("Name", "name", this.name));
+        form.addInput(new TextFormField("Value", "content", this.content));
+        return form;
+    }
 }
 TextLeaf.prototype = Object.create(Leaf.prototype);
+
+function BooleanLeaf(name, content = false)
+{
+    if (!(this instanceof BooleanLeaf))
+        return new BooleanLeaf(name, content);
+
+    if (typeof(content) !== "boolean")
+        throw "BooleanLeaf() expects boolean as content";
+
+    Leaf.call(this, name, content, "bool-leaf");
+
+    this.createForm = function(title)
+    {
+        console.log("XXX: " + typeof(this.content));
+        var form = new Form(title);
+        form.addInput(new FormField("Name", "name", this.name));
+        form.addInput(new BooleanFormField("Value", "content", this.content));
+        return form;
+    }
+}
+BooleanLeaf.prototype = Object.create(Leaf.prototype);

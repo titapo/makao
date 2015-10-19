@@ -3,14 +3,20 @@
     <head>
     <title>makao : unit test</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="tag.js"></script>
         <script src="forms.js"></script>
         <script src="entity.js"></script>
         <script src="variables.js"></script>
+        <script src="entity_factory.js"></script>
         <script src="test.js"></script>
         <link rel="stylesheet" type="text/css" href="basic.css" />
     </head>
     <body>
         <script type="text/javascript">
+            var factory = new EntityFactory();
+            factory.setType("node", Node);
+            factory.setType("leaf", Leaf);
+
             var suite = new TestSuite("entities");
             // leaf tests
             suite.add(new TestCase("leaf", function(test)
@@ -40,7 +46,7 @@
             suite.add(new TestCase("create leaf from json", function(test)
                     {
                         var input = '{"name":"myLeafName","type":"leaf","content":"myLeafValue"}';
-                        var leaf = createTreeFromString(input);
+                        var leaf = createTreeFromString(input, factory);
                         test.assertEquals(leaf.name, "myLeafName");
                         test.assertEquals(leaf.type, "leaf");
                         test.assertEquals(leaf.base, 0);
@@ -86,17 +92,19 @@
             suite.add(new TestCase("create empty node from json", function(test)
                     {
                         var input = '{"name":"myNode","type":"node","children":[]}';
-                        var node = createTreeFromString(input);
+                        var node = createTreeFromString(input, factory);
                         test.assertEquals(node.name, "myNode");
                         test.assertEquals(node.type, "node");
                         test.assertEquals(node.base, 0);
                         test.assertEquals(node.children.length, 0);
+                        suite.iii = input;
+                        suite.fff = factory;
                     }));
 
             suite.add(new TestCase("create node from json", function(test)
                     {
                         var input = '{"name":"myNode","type":"node","children":[{"name":"leafName","type":"leaf","content":"val"}]}';
-                        var node = createTreeFromString(input);
+                        var node = createTreeFromString(input, factory);
                         test.assertEquals(node.name, "myNode");
                         test.assertEquals(node.type, "node");
                         test.assertEquals(node.base, 0);
@@ -120,7 +128,7 @@
                         + '}'
                         + ']'
                         + '}';
-                        var node = createTreeFromString(input);
+                        var node = createTreeFromString(input, factory);
                         test.assertEquals(node.name, "myNode");
                         test.assertEquals(node.type, "node");
                         test.assertEquals(node.base, 0);
@@ -148,7 +156,16 @@
             suite.add(new TestCase("link-leaf test", function(test)
                     {
                         var link = new LinkLeaf("mypage", "example.com");
+                        /*{*/
+                        test.assertEquals(link.name, "mypage");
+                        /*}*/
                         test.assertEquals(link.displayBrief(), "<a target='_blank' href='example.com'>mypage</a> ")
+                    }));
+
+            suite.add(new TestCase("text-leaf", function(test)
+                    {
+                        var text = new TextLeaf("mytext", "this is a long story");
+                        test.assertEquals(text.content, "this is a long story");
                     }));
 
             suite.add(new TestCase("enum-leaf", function(test)
@@ -176,7 +193,7 @@
                     {
                         var field = new FormField("Your name", "username", "John");
                         test.assertEquals(field.display(),
-                            "Your name: <input type='text' name='username' value='John' />");
+                            "Your name: <input type='text' name='username' value='John'   />");
                         field.setValue("Red");
                     }));
 
@@ -191,20 +208,42 @@
                         field.setValue("Red");
                     }));
 
-            suite.add(new TestCase("basic form field", function(test)
+            suite.add(new TestCase("boolean leaf", function(test)
                     {
-                        var field = new RadioFormField("Favourite color", "color",
-                            {"red":"Red", "green":"Green", "blue":"Blue"});
-                        test.assertEquals(field.display(),
-                            "Favourite color: <br />"
-                           + "<input type='radio' name='color' value='red' /> Red<br />"
-                           + "<input type='radio' name='color' value='green' /> Green<br />"
-                           + "<input type='radio' name='color' value='blue' /> Blue<br />"
-                            );
+                        var field = new BooleanLeaf("Favourite color", true);
                         // field.setValue("Red"); TODO check validation
                     }));
 
-            suite.run();
+            suite.add(new TestCase("entity factory", function(test)
+                    {
+                        var factory = new EntityFactory();
+                        factory.setType("leaf", Leaf);
+                        factory.setType("node", Node);
+                        test.assertEquals(factory.getType("leaf"), Leaf);
+                        test.assertEquals(factory.getType("node"), Node);
+                        test.assertEquals(factory.listTypenames(), ["leaf", "node"]);
+                    }));
+
+            suite.add(new TestCase("entity factory create() for all supported types", function(test)
+                    {
+                        var factory = new EntityFactory();
+                        factory.setType("leaf", Leaf);
+                        factory.setType("link-leaf", LinkLeaf);
+                        factory.setType("enum-leaf", EnumLeaf);
+                        factory.setType("text-leaf", TextLeaf);
+                        factory.setType("boolean-leaf", BooleanLeaf);
+                        factory.setType("node", Node);
+                        
+                        var list = factory.listTypenames();
+                        for (var i = 0; i < list.length; ++i)
+                        {
+                            var typeName = list[i];
+                            console.log(typeName);
+                            test.assertIsInstance(factory.create(typeName), factory.getType(typeName));
+                        }
+                    }));
+
+            suite.run([]);
         </script>
     </body>
 </html>

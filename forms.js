@@ -68,6 +68,7 @@ function FormField(label, name, value = "")
     this.type = "text";
     this.validator = null;
     this.value = value;
+    this.attributes = {};
 
     this._displayLabel = function()
     {
@@ -79,8 +80,15 @@ function FormField(label, name, value = "")
 
     this.display = function()
     {
+        console.log("FromField.display() name:" + this.name + ", attributes:" + this.attributes)
         return this._displayLabel()
-            + "<input type='" + this.type + "' name='" + this.name + "' value='" + this.value + "' />";
+            + "<input type='" + this.type + "' name='" + this.name + "' value='" + this.value + "' "
+            + listTagAttributes(this.attributes)
+            + " />";
+    }
+    this.setAttribute = function(name, value)
+    {
+        this.attributes[name] = value;
     }
 
     this.setValue = function(value)
@@ -103,7 +111,9 @@ function TextFormField(label, name, value = "")
     this.display = function()
     {
         return this._displayLabel() + "<br />"
-            + "<textarea name='" + this.name + "'>" + this.value + "</textarea>";
+            + "<textarea name='" + this.name + "' " 
+            + listTagAttributes(this.attributes)
+            + "'>" + this.value + "</textarea><br />";
     }
 }
 TextFormField.prototype = Object.create(FormField.prototype);
@@ -128,7 +138,8 @@ function RadioFormField(label, name, optionMap)
             out += "<br />";
         for (var key in this.optionMap)
         {
-            out += "<input type='" + this.type + "' name='" + this.name + "' value='" + key + "' /> ";
+            out += "<input type='" + this.type + "' name='" + this.name + "' value='" + key + "' ";
+            out += listTagAttributes(this.attributes) + " /> ";
             out += this.optionMap[key] + "<br />";
         }
 
@@ -137,11 +148,30 @@ function RadioFormField(label, name, optionMap)
 }
 RadioFormField.prototype = Object.create(FormField.prototype);
 
+function BooleanFormField(label, name, value = false)
+{
+    if (typeof(value) !== "boolean")
+        throw "BooleanFormField() expects boolean as value";
+
+    FormField.call(this, label, name, value);
+    this.type = "checkbox";
+
+    this.display = function()
+    {
+        return "<input type='" + this.type + "' name='" + this.name+ "' "
+            + (this.value === true?"checked":"") + " "
+            + listTagAttributes(this.attributes)
+            +" /> " + this.label + "<br />";
+    }
+}
+BooleanFormField.prototype = Object.create(FormField.prototype);
+
 function Form(title)
 {
     this.title = title;
     this.inputs = Array();
     this.displayerLayer = null;
+    this.submit = null;
 
     this.addInput = function(field)
     {
@@ -165,7 +195,11 @@ function Form(title)
     this.display = function()
     {
         out = this.displayFields();
-        out += "<a class='action ok' onclick='Submit(this);'>submit</a>";
+        if (this.sumbit !== null)
+        {
+            console.log(">> -- " + typeof(this.submit));
+            out += "<a class='action ok' onclick='Submit(this);'>submit</a>";
+        }
         return "<form>" + out + "</form>";
     }
 }
@@ -194,6 +228,7 @@ function Submit(submitButton)
 
     for (var fieldname in gForm.inputs)
     {
+        console.log("XXX " + fieldname);
         var field = gForm.inputs[fieldname];
         field.value = formNode.elements[fieldname].value;
         console.log(fieldname + ", " + formNode.elements[fieldname].value);

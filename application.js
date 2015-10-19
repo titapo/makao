@@ -3,7 +3,9 @@
 //TODO
 function Context()
 {
+    this.entityFactory = new EntityFactory();
     this.currentForm = undefined;
+
     this.setCurrentForm = function(form)
     {
         if (!(form instanceof Form))
@@ -13,6 +15,7 @@ function Context()
     }
 }
 
+var context;
 var rootNode;
 var actualNode;
 var globalActionList;
@@ -63,11 +66,7 @@ function updateChild(childName)
     if (child === undefined)
         throw "Child '" + childName + "' does not exist!";
 
-    var form = new Form("Update child");
-    form.addInput(new FormField("Name", "name", child.name));
-
-    if (child instanceof Leaf)
-        form.addInput(new FormField("Value", "value", child.content));
+    var form = child.createForm("Update child");
 
     form.submit = function(values)
     {
@@ -85,7 +84,7 @@ function updateChild(childName)
         child.name = name;
 
         if (child instanceof Leaf)
-            child.content = this.inputs["value"].value;
+            child.content = this.inputs["content"].value;
 
         DisplayActualNode();
         return true;
@@ -96,51 +95,54 @@ function updateChild(childName)
     SetCurrentForm(form);
 }
 
-
-
-function createChildNode()
+function createChild()
 {
-    var form = new Form("Create new children");
-    form.addInput(new FormField("Node name", "name"));
-    form.submit = function (values)
+    var variables = context.entityFactory.listTypenames();
+    var form = new Form("Create new child");
+    var options = {};
+    for (var i = 0; i < variables.length; ++i)
     {
-        var name = this.inputs["name"].value;
-
-        if (name.length === 0)
-            return false;
-
-        if (actualNode.getChild(name) !== undefined)
-            throw actualNode.name + " already has a child with name: '" + name +"'";
-
-        actualNode.add(new Node(name));
-        //refresh
-        DisplayActualNode();
-
-        return true;
-    };
+        options[variables[i]] = variables[i];
+    }
+    var selector = new RadioFormField("Type", "type", options);
+    //selector.setAttribute("onclick", "alert(\"hiuhi\");");
+    form.addInput(selector);
 
     var layer = new Layer("win-layer");
-    layer.displayForm(form);
     SetCurrentForm(form); // set on context
+
+    form.submit = function(values)
+    {
+       createChildEntity(this.inputs["type"].value);
+    }
+
+    layer.displayForm(form);
+
+    return;
 }
 
-function createChildLeaf()
+function createChildEntity(identifier)
 {
-    var form = new Form("Create new leaf");
-    form.addInput(new FormField("Name", "name"));
-    form.addInput(new FormField("Value", "value"));
-    form.submit = function (values)
+    var entity = context.entityFactory.create(identifier);
+    var form = entity.createForm("Create new " + identifier);
+    form.submit = function()
     {
         var name = this.inputs["name"].value;
-        var value = this.inputs["value"].value;
-
+        /*
+         * TODO validation
         if (name.length === 0)
             return false;
-
+            */
         if (actualNode.getChild(name) !== undefined)
             throw actualNode.name + " already has a leaf with name: '" + name +"'";
 
-        actualNode.add(new Leaf(name, value));
+
+        for (var key in this.inputs)
+        {
+            entity[key] = this.inputs[key].value;
+        }
+
+        actualNode.add(entity);
         //refresh
         DisplayActualNode();
 
@@ -151,6 +153,40 @@ function createChildLeaf()
     layer.displayForm(form);
 
     SetCurrentForm(form); // set on context
+}
+
+function moveUpChild(childName)
+{
+    console.log("moveUpChild()");
+    // check whether is it the first
+    var index = actualNode.getChildIndex(childName);
+    if (index <= 0)
+        return false;
+
+
+    children = actualNode.children;
+    var swapWith = index - 1;
+    children[index] = children.splice(swapWith, 1, children[index])[0];
+    DisplayActualNode();
+
+    return true;
+}
+
+function moveDownChild(childName)
+{
+    console.log("moveDownChild()");
+    // check whether is it the last
+    var index = actualNode.getChildIndex(childName);
+    if (index == -1 || index >= actualNode.children.length - 1)
+        return false;
+
+
+    children = actualNode.children;
+    var swapWith = index + 1;
+    children[index] = children.splice(swapWith, 1, children[index])[0];
+    DisplayActualNode();
+
+    return true;
 }
 
 function generateNodeOutput()
@@ -172,7 +208,7 @@ function loadNode()
     {
         var json = this.inputs["json"].value;
 
-        var node = createTreeFromString(json);
+        var node = createTreeFromString(json, context.entityFactory);
 
         if (actualNode.getChild(name) !== undefined)
             throw actualNode.name + " already has a leaf with name: '" + name +"'";
@@ -194,7 +230,7 @@ function GenerateTree()
 {
     var root = new Node("root");
     {
-        var constNode = new Node("const");
+        var constNode = new Node("makao");
         {
             var info = new Node("info");
             info.add(new Leaf("program", "makao"));
@@ -213,32 +249,39 @@ function GenerateTree()
 function CreateActionList()
 {
     var actions = new ActionList();
+    var actionLink = function(title, action)
+    {
+        console.log("actionLink: " +  title + " > " + action);
+        return Tag("a", title, {"class":"action", "onclick":action});
+    }
     actions.set("base-link", function(node)
     {
         if (node.base == 0)
             return "";
 
-        return "<a class='action' onclick='goToBase()'>" + node.base.name + "</a>";
+        return actionLink(node.base.name, "goToBase()");
     });
 
     actions.set("go-to-child", function(node)
     {
-        return "<a class='action' onclick='goToChild(\"" + node.name + "\")'>go</a>";
+        return actionLink("go", "goToChild(\"" + node.name +"\")");
     });
 
     actions.set("node-actions", function(node)
     {
-        return "<a class=\"action\" onclick=\"createChildNode()\">create node</a> "
-        + "<a class=\"action\" onclick=\"createChildLeaf()\">create leaf</a> "
-        + "<a class=\"action\" onclick=\"generateNodeOutput()\">output</a> "
-        + "<a class=\"action\" onclick=\"loadNode()\">load children</a> "
-        ;
+        return actionLink("create child", "createChild()")
+        + actionLink("output", "generateNodeOutput()")
+        + actionLink("load children", "loadNode()");
     });
 
     actions.set("child-modify", function(child)
     {
-        return "<a class='action' onclick='updateChild(\"" + child.name + "\")'>update</a>"
-            + "<a class='action' onclick='deleteChild(\"" + child.name + "\")'>remove</a>";
+        return actionLink("update", "updateChild(\"" + child.name + "\")")
+            + actionLink("remove", "deleteChild(\"" + child.name + "\")")
+            + actionLink("^", "moveUpChild(\"" + child.name + "\")")
+            + actionLink("v", "moveDownChild(\"" + child.name + "\")")
+
+        ;
     });
 
     return actions;
@@ -249,6 +292,15 @@ function Init()
     console.log("makao::Init()");
     // tree generation
     rootNode = GenerateTree();
+    context = new Context();
+    context.entityFactory.setType("leaf", Leaf);
+    context.entityFactory.setType("node", Node);
+    context.entityFactory.setType("text-leaf", TextLeaf);
+    context.entityFactory.setType("link-leaf", LinkLeaf);
+    /*
+    context.entityFactory.setType("boolean-leaf", BooleanLeaf);
+    context.entityFactory.setType("enum-leaf", EnumLeaf);
+    */
 
     // actions for tree handling/display
     globalActionList = CreateActionList();

@@ -50,8 +50,29 @@ function TestCase(name, method)
 
     this.assertEquals = function(first, second)
     {
+        if (first instanceof Array)
+        {
+            if (first.length !== second.length)
+                this.fail("array comparison failed: (different length) '"
+                        + first + "' != '" + second + "'");
+
+            for (var i = 0; i < first.length; ++i) 
+            {
+                if (first[i] === second[i])
+                    continue;
+
+                console.log("position:" + i + ", '" + first[i] + "' != '" + second[i]+ "'");
+                this.fail("array comparison failed: '" + first + "' != '" + second + "'");
+                return;
+            }
+            return;
+        }
+
         if (first != second)
         {
+            console.log("types: " + typeof(first) + " ~ " + typeof(second));
+            suite.first = first;
+            suite.second = second;
             this._findAndLogStringDifference(first, second)
             this.fail("comparison failed: '" + first + "' != '" + second + "'");
         }
@@ -64,7 +85,6 @@ function TestCase(name, method)
 
         for (var i = 0; i < first.length; ++i)
         {
-            console.log("#" + i);
             if (first[i] === second[i])
                 continue;
 
@@ -102,17 +122,36 @@ function TestSuite(name)
         this.testCases.push(testCase);
     }
 
-    this.run = function()
+    this.run = function(casesToRun = [])
     {
+        var cases = [];
+        if (casesToRun.length > 0)
+        {
+            cases = [];
+            for(var key in this.testCases)
+            {
+                var caseName = this.testCases[key].name;
+                if (casesToRun.indexOf(caseName) === -1)
+                    continue;
+
+                cases.push(this.testCases[key]);
+            }
+        }
+
 
         console.log("running test suite: " + this.name);
-        var failed = false;
-        var runnedCases = 0;
-        for (var i = 0; i < this.testCases.length; ++i)
+        if (cases.length === 0)
         {
-            var testCase = this.testCases[i];
+            console.log("running all test cases");
+            cases = this.testCases;
+        }
+        var failed = false;
+        var numOfRunnedCases = 0;
+        for (var i = 0; i < cases.length; ++i)
+        {
+            var testCase = cases[i];
             testCase.run();
-            ++runnedCases;
+            ++numOfRunnedCases;
             if (!testCase.getResult())
             {
                 failed = true;
@@ -124,6 +163,6 @@ function TestSuite(name)
         if (failed === false)
             color = "#3c3";
 
-        document.write("<br /><div style='color:"+color+";'> ### test suite result: " + this.name + " (" + runnedCases + " test case runned) ---- [ " + (failed === false?"PASSED":"FAILED")+" ] </div>");
+        document.write("<br /><div style='color:"+color+";'> ### test suite result: " + this.name + " (" + numOfRunnedCases + " test case runned) ---- [ " + (failed === false?"PASSED":"FAILED")+" ] </div>");
     }
 }

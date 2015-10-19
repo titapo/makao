@@ -1,9 +1,3 @@
-// helpers
-function Tag(name, content, attrclass)
-{
-    return "<" + name + " class=" + attrclass + ">" + content + "</" + name + ">";
-}
-
 //function copyObject(obj)
 var copyObject = function (obj)
 {
@@ -65,6 +59,12 @@ function Entity(name, type, base)
     {
         throw "Entity.generateOutput() is not callable!";
     }
+
+    this.createForm = function(title)
+    {
+        throw "Entity.createForm() is not callable!";
+    }
+
     this.clone = function()
     {
         return new Entity(this.name, this.type, this.base);
@@ -73,6 +73,9 @@ function Entity(name, type, base)
 
 function Leaf(name, content = "", type = "leaf", base = 0)
 {
+    if (!(this instanceof Leaf))
+        return new Leaf(name, content, type, base);
+
     Entity.call(this, name, type, base);
     this.content = content;
     console.log("create Leaf(" + name + ", " + content + ", " + type + ")");
@@ -95,9 +98,18 @@ function Leaf(name, content = "", type = "leaf", base = 0)
 
         return JSON.stringify(copy);
     }
+
     this.clone = function()
     {
         return new Leaf(this.name, this.content, this.type, this.base);
+    }
+
+    this.createForm = function(title)
+    {
+        var form = new Form(title);
+        form.addInput(new FormField("Name", "name", this.name));
+        form.addInput(new FormField("Value", "content", this.content));
+        return form;
     }
 }
 Leaf.prototype = Object.create(Entity.prototype);
@@ -105,6 +117,9 @@ Leaf.prototype = Object.create(Entity.prototype);
 // Node
 function Node(name, type = "node", base = 0)
 {
+    if (!(this instanceof Node))
+        return new Node(name, type, base);
+
     Entity.call(this, name, type, base);
 
     this.children = Array();
@@ -116,7 +131,6 @@ function Node(name, type = "node", base = 0)
         return this.name + ": (" + this.type + ") "
             + actions.execute("go-to-child", this)
             + actions.execute("child-modify", this);
-
     }
 
     this.display = function(actions)
@@ -127,10 +141,10 @@ function Node(name, type = "node", base = 0)
         var out = "";
         if (this.base instanceof Node)
         {
-            out += Tag("div", actions.execute("base-link", this), "base");
+            out += Tag("div", actions.execute("base-link", this), {"class":"base"});
         }
 
-        out += Tag("h3", this.name, "title");
+        out += Tag("h3", this.name, {"class":"title"});
         out += Tag("p", "(type:" + this.type + ")");
         out += actions.execute("node-actions", this);
 
@@ -138,12 +152,12 @@ function Node(name, type = "node", base = 0)
         for (i = 0; i < this.children.length; ++i)
         {
             child = this.children[i];
-            content += Tag("p", child.displayBrief(actions), "");
+            content += Tag("p", child.displayBrief(actions));
         }
 
-        out += Tag("div", content, "entity-content");
+        out += Tag("div", content, {"class":"entity-content"});
 
-        return Tag("div", out, "entity");
+        return Tag("div", out, {"class":"entity"});
     }
 
     this.add = function(node)
@@ -227,35 +241,12 @@ function Node(name, type = "node", base = 0)
 
         return node;
     }
-}
-Node.prototype = Object.create(Entity.prototype);
 
-
-function createTreeFromString(jsonString)
-{
-    var json = JSON.parse(jsonString);
-    return createFromJson(json);
-}
-
-function createFromJson(json)
-{
-    switch (json.type)
+    this.createForm = function(title)
     {
-        case "leaf":
-            return new Leaf(json.name, json.content, json.type);
-
-        case "node":
-        {
-            var node = new Node(json.name, json.type);
-            for (var i = 0; i < json.children.length; ++i)
-            {
-                var child = json.children[i];
-                node.add(createFromJson(child));
-            }
-
-            return node;
-        }
-        default:
-            throw "Invalid type: '" + json.type + "'";
+        var form = new Form(title);
+        form.addInput(new FormField("Name", "name", this.name));
+        return form;
     }
 }
+Node.prototype = Object.create(Entity.prototype);

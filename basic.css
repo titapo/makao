@@ -12,6 +12,7 @@ body
 }
 a
 {
+	color: #eee;
     cursor:pointer;
     opacity: 0.8;
     transition: all 200ms;
