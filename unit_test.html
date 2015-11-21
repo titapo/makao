@@ -9,6 +9,7 @@
         <script src="variables.js"></script>
         <script src="entity_factory.js"></script>
         <script src="test.js"></script>
+        <script src="file_handler.js"></script>
         <link rel="stylesheet" type="text/css" href="basic.css" />
     </head>
     <body>
@@ -241,6 +242,15 @@
                             console.log(typeName);
                             test.assertIsInstance(factory.create(typeName), factory.getType(typeName));
                         }
+                    }));
+
+            suite.add(new TestCase("file reader", function(test)
+                    {
+                        var fh = new FileHandler("./global/conf.json");
+                        fh.setCallback(function(msg)
+                        {});
+                        fh.read();
+                        console.log(fh.content);
                     }));
 
             suite.run([]);
