@@ -51,17 +51,24 @@ div.entity div.entity-content
     color: #bbe;
 }
 
-div.entity a.action
+a.action
 {
-    padding: 3px;
-    margin: 5px;
-    text-decoration: none;
-    border: 1px solid #444;
-    color: #77a;
-    display: inline-block;
+    padding: 5px;
 }
 
-div .entity a.action:hover
+div.entity a.action
+{
+    margin: 5px;
+    text-decoration: none;
+    /*border: 1px solid #444;*/
+    background: rgba(0,0,0,0.2);
+    text-align: center;
+    color: #77a;
+    display: inline-block;
+    min-width: 25px;
+}
+
+div.entity a.action:hover
 {
     background-color: #56a;
     color: #ccf;
@@ -70,17 +77,11 @@ div .entity a.action:hover
 a.action.error
 {
     background-color: #922;
-    border: 1px solid #700;
-    padding: 3px 10px;
-    margin: 12px;
 }
 
 a.action.ok
 {
     background-color: #292;
-    border: 1px solid #070;
-    padding: 3px 10px;
-    margin: 12px;
 }
 
 div#win-layer
