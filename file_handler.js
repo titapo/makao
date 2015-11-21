@@ -1,5 +1,13 @@
 
-
+/**
+ * How to use:
+ *
+ * var handler = new FileHandler("something.txt");
+ * handler.setCallback(function(msg)
+ * { ... });
+ * handler.read();
+ *
+ */
 function FileHandler(filename)
 {
     this.filename = filename;

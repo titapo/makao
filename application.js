@@ -1,20 +1,5 @@
 // application
 
-//TODO
-function Context()
-{
-    this.entityFactory = new EntityFactory();
-    this.currentForm = undefined;
-
-    this.setCurrentForm = function(form)
-    {
-        if (!(form instanceof Form))
-            throw "setCurrentForm(): not a form!";
-
-        this.currentForm = form;
-    }
-}
-
 var context;
 var rootNode;
 var actualNode;
@@ -287,12 +272,31 @@ function CreateActionList()
     return actions;
 }
 
+function LoadGlobalConfig(ctx, filename)
+{
+    var fh = new FileHandler(filename);
+    fh.setCallback(function(configString)
+    {
+        var input = "{" + configString + "}";
+        var config = JSON.parse(input);
+        for (var propertyName in config)
+            console.log(" config: " + propertyName + " : " + config[propertyName]);
+
+        // TODO validating
+        ctx.setConfig(config);
+        
+    });
+    fh.read();
+}
+
 function Init()
 {
     console.log("makao::Init()");
     // tree generation
     rootNode = GenerateTree();
+
     context = new Context();
+    LoadGlobalConfig(context, "./global/global.conf");
     context.entityFactory.setType("leaf", Leaf);
     context.entityFactory.setType("node", Node);
     context.entityFactory.setType("text-leaf", TextLeaf);
