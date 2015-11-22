@@ -1,5 +1,4 @@
 //function copyObject(obj)
-var g_entity_logger = new Logger("entity");
 
 var copyObject = function (obj)
 {
@@ -41,11 +40,12 @@ function ActionList()
 // base class for leaves and nodes
 function Entity(name, type, base)
 {
+    var logger = new Logger("entity");
     this.name = name;
     this.type = type;
     this.base = base;
 
-    g_entity_logger.debug("create Entity(" + name + ", " + type + ")");
+    logger.debug("create(" + name + ", " + type + ")");
 
     this.display = function()
     {
@@ -80,7 +80,7 @@ function Leaf(name, content = "", type = "leaf", base = 0)
 
     Entity.call(this, name, type, base);
     this.content = content;
-    g_entity_logger.debug("create Leaf(" + name + ", " + content + ", " + type + ")");
+    //debug("create Leaf(" + name + ", " + content + ", " + type + ")");
 
     this.display = function(actions)
     {
@@ -126,7 +126,7 @@ function Node(name, type = "node", base = 0)
 
     this.children = Array();
 
-    g_entity_logger.debug("create Node(" + name + ", " + type + ")");
+    // debug("create Node(" + name + ", " + type + ")");
 
     this.displayBrief = function(actions)
     {
@@ -138,7 +138,7 @@ function Node(name, type = "node", base = 0)
     this.display = function(actions)
     {
         // TODO separate view!
-        g_entity_logger.debug("Node.display() name:" + this.name);
+        // debug("Node.display() name:" + this.name);
 
         var out = "";
         if (this.base instanceof Node)

@@ -10,23 +10,22 @@
  */
 function FileHandler(filename)
 {
+    var logger = new Logger("file[" + filename + "]");
     this.filename = filename;
     var readyCallback = null;
     this.setCallback = function(cb)
     {
-        console.log("set + " + typeof(cb));
         readyCallback = cb;
-        console.log("set ++" + typeof(readyCallback));
     }
 
     this.read = function()
     {
         var client = new XMLHttpRequest();
-        client.open('GET', this.filename);
+        client.open('GET', this.filename, false);
         var handlerRef = this;
         client.onreadystatechange = function(handlerRef)
         {
-            console.log("state:" + client.readyState);
+            logger.debug("state:" + client.readyState);
             /*
             console.log("type:" + client.responseType);
             console.log("text:" + client.responseText);
@@ -42,9 +41,12 @@ function FileHandler(filename)
 
             readyCallback(client.responseText);
         }
+
         try
         {
-        client.send();
+            client.send();
+            if (client.status == 404)
+                logger.error("not exists");
         }
         catch (ex)
         {

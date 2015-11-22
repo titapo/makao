@@ -285,7 +285,7 @@ function LoadGlobalConfig(ctx, filename)
     fh.setCallback(function(configString)
     {
         ctx.setConfig(getDefaultConfig());
-        g_logger.info("load global config");
+        g_logger.info("loading global config");
 
         var input = "{" + configString + "}";
         var config = JSON.parse(input);
@@ -303,6 +303,7 @@ function LoadGlobalConfig(ctx, filename)
         }
 
         Logger.setLogLevel(ctx.config["logLevel"])
+        g_logger.info("global config loaded");
 
         
     });
@@ -316,7 +317,7 @@ function Init()
     g_rootNode = GenerateTree();
 
     g_context = new Context();
-    LoadGlobalConfig(g_context, "./global/global.conf");
+    LoadGlobalConfig(g_context, "file:global/global.conf");
     g_context.entityFactory.setType("leaf", Leaf);
     g_context.entityFactory.setType("node", Node);
     g_context.entityFactory.setType("text-leaf", TextLeaf);
