@@ -1,4 +1,6 @@
 //function copyObject(obj)
+var g_entity_logger = new Logger("entity");
+
 var copyObject = function (obj)
 {
     if (obj === null || typeof obj !== 'object')
@@ -43,7 +45,7 @@ function Entity(name, type, base)
     this.type = type;
     this.base = base;
 
-    console.log("create Entity(" + name + ", " + type + ")");
+    g_entity_logger.debug("create Entity(" + name + ", " + type + ")");
 
     this.display = function()
     {
@@ -78,7 +80,7 @@ function Leaf(name, content = "", type = "leaf", base = 0)
 
     Entity.call(this, name, type, base);
     this.content = content;
-    console.log("create Leaf(" + name + ", " + content + ", " + type + ")");
+    g_entity_logger.debug("create Leaf(" + name + ", " + content + ", " + type + ")");
 
     this.display = function(actions)
     {
@@ -124,7 +126,7 @@ function Node(name, type = "node", base = 0)
 
     this.children = Array();
 
-    console.log("create Node(" + name + ", " + type + ")");
+    g_entity_logger.debug("create Node(" + name + ", " + type + ")");
 
     this.displayBrief = function(actions)
     {
@@ -136,7 +138,7 @@ function Node(name, type = "node", base = 0)
     this.display = function(actions)
     {
         // TODO separate view!
-        console.log("Node.display() name:" + this.name);
+        g_entity_logger.debug("Node.display() name:" + this.name);
 
         var out = "";
         if (this.base instanceof Node)
@@ -173,7 +175,7 @@ function Node(name, type = "node", base = 0)
     {
         var index = this.getChildIndex(nodeName);
         if (index < 0)
-            console.log("Node.remove(): no such child");
+            g_entity_logger.info("Node.remove('" + nodeName + "'): no such child");
 
         this.children.splice(i, 1);
     }

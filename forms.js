@@ -1,6 +1,7 @@
 function Layer(id)
 {
-    console.log("create Layer() id='" + id + "'");
+    var logger = new Logger("layer");
+    logger.info("create, id='" + id + "'");
     this.id = id;
     this.layer = document.getElementById(id);
 
@@ -39,7 +40,8 @@ function Layer(id)
 
 function Window(title)
 {
-    console.log("create Window() title='" + title + "'");
+    var logger = new Logger("window");
+    logger.info("create, title='" + title + "'");
     this.title = title;
     this.content = "";
     this.windowId = "w001";
@@ -63,6 +65,7 @@ function Window(title)
 
 function FormField(label, name, value = "")
 {
+    var logger = new Logger("form-field");
     this.label = label;
     this.name = name;
     this.type = "text";
@@ -80,7 +83,7 @@ function FormField(label, name, value = "")
 
     this.display = function()
     {
-        console.log("FromField.display() name:" + this.name + ", attributes:" + this.attributes)
+        logger.debug("FromField.display() name:" + this.name + ", attributes:" + this.attributes)
         return this._displayLabel()
             + "<input type='" + this.type + "' name='" + this.name + "' value='" + this.value + "' "
             + listTagAttributes(this.attributes)
@@ -168,6 +171,7 @@ BooleanFormField.prototype = Object.create(FormField.prototype);
 
 function Form(title)
 {
+    this.logger("form[" + title + "]")
     this.title = title;
     this.inputs = Array();
     this.displayerLayer = null;
@@ -197,7 +201,7 @@ function Form(title)
         out = this.displayFields();
         if (this.sumbit !== null)
         {
-            console.log(">> -- " + typeof(this.submit));
+            logger.debug(">> -- " + typeof(this.submit));
             out += "<a class='action ok' onclick='Submit(this);'>submit</a>";
         }
         return "<form>" + out + "</form>";
@@ -228,7 +232,6 @@ function Submit(submitButton)
 
     for (var fieldname in gForm.inputs)
     {
-        console.log("XXX " + fieldname);
         var field = gForm.inputs[fieldname];
         field.value = formNode.elements[fieldname].value;
         console.log(fieldname + ", " + formNode.elements[fieldname].value);

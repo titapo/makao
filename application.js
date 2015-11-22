@@ -1,5 +1,6 @@
 // application
 
+var g_logger = new Logger("makao", "info");
 var g_context;
 var g_rootNode;
 var g_actualNode;
@@ -142,7 +143,7 @@ function createChildEntity(identifier)
 
 function moveUpChild(childName)
 {
-    console.log("moveUpChild()");
+    g_logger.debug("moveUpChild()");
     // check whether is it the first
     var index = g_actualNode.getChildIndex(childName);
     if (index <= 0)
@@ -159,7 +160,7 @@ function moveUpChild(childName)
 
 function moveDownChild(childName)
 {
-    console.log("moveDownChild()");
+    g_logger.debug("moveDownChild()");
     // check whether is it the last
     var index = g_actualNode.getChildIndex(childName);
     if (index == -1 || index >= g_actualNode.children.length - 1)
@@ -236,7 +237,7 @@ function CreateActionList()
     var actions = new ActionList();
     var actionLink = function(title, action)
     {
-        console.log("actionLink: " +  title + " > " + action);
+        g_logger.debug("actionLink: " +  title + " > " + action);
         return Tag("a", title, {"class":"action", "onclick":action});
     }
     actions.set("base-link", function(node)
@@ -280,7 +281,7 @@ function LoadGlobalConfig(ctx, filename)
         var input = "{" + configString + "}";
         var config = JSON.parse(input);
         for (var propertyName in config)
-            console.log(" config: " + propertyName + " : " + config[propertyName]);
+            g_logger.debug(" config: " + propertyName + " : " + config[propertyName]);
 
         // TODO validating
         ctx.setConfig(config);
@@ -291,7 +292,7 @@ function LoadGlobalConfig(ctx, filename)
 
 function Init()
 {
-    console.log("makao::Init()");
+    g_logger.info("Init");
     // tree generation
     g_rootNode = GenerateTree();
 
