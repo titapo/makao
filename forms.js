@@ -171,7 +171,7 @@ BooleanFormField.prototype = Object.create(FormField.prototype);
 
 function Form(title)
 {
-    this.logger("form[" + title + "]")
+    this.logger = new Logger("form[" + title + "]")
     this.title = title;
     this.inputs = Array();
     this.displayerLayer = null;
@@ -201,7 +201,7 @@ function Form(title)
         out = this.displayFields();
         if (this.sumbit !== null)
         {
-            logger.debug(">> -- " + typeof(this.submit));
+            this.logger.debug(">> -- " + typeof(this.submit));
             out += "<a class='action ok' onclick='Submit(this);'>submit</a>";
         }
         return "<form>" + out + "</form>";

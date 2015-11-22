@@ -273,18 +273,37 @@ function CreateActionList()
     return actions;
 }
 
+function getDefaultConfig()
+{
+    return {
+        "logLevel":"info"
+    }
+}
 function LoadGlobalConfig(ctx, filename)
 {
     var fh = new FileHandler(filename);
     fh.setCallback(function(configString)
     {
+        ctx.setConfig(getDefaultConfig());
+        g_logger.info("load global config");
+
         var input = "{" + configString + "}";
         var config = JSON.parse(input);
         for (var propertyName in config)
             g_logger.debug(" config: " + propertyName + " : " + config[propertyName]);
 
         // TODO validating
-        ctx.setConfig(config);
+        if (true)
+        {
+            ctx.setConfig(config);
+        }
+        else
+        {
+            g_logger.error("could not verify global config");
+        }
+
+        Logger.setLogLevel(ctx.config["logLevel"])
+
         
     });
     fh.read();
