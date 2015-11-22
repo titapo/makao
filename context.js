@@ -20,5 +20,16 @@ function Context()
     {
         this.config = config;
     }
+
+    /**
+     * merges new config into existing, overrides
+     */
+    this.overrideConfig = function(config)
+    {
+        for (var attr in config)
+        {
+            this.config[attr] = config[attr];
+        }
+    }
 }
 

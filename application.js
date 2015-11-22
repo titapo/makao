@@ -276,7 +276,8 @@ function CreateActionList()
 function getDefaultConfig()
 {
     return {
-        "logLevel":"info"
+        "logLevel":"info",
+        "style":"style/basic.css"
     }
 }
 function LoadGlobalConfig(ctx, filename)
@@ -295,7 +296,7 @@ function LoadGlobalConfig(ctx, filename)
         // TODO validating
         if (true)
         {
-            ctx.setConfig(config);
+            ctx.overrideConfig(config);
         }
         else
         {
@@ -304,6 +305,8 @@ function LoadGlobalConfig(ctx, filename)
 
         Logger.setLogLevel(ctx.config["logLevel"])
         g_logger.info("global config loaded");
+        g_logger.info("load stylesheet: " + ctx.config["style"]);
+        g_logger.info(document.getElementsByTagName("link").item(0).setAttribute("href", ctx.config["style"]));
 
         
     });
