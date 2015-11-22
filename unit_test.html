@@ -6,6 +6,7 @@
         <script src="logger.js"></script>
         <script src="tag.js"></script>
         <script src="forms.js"></script>
+        <script src="path.js"></script>
         <script src="entity.js"></script>
         <script src="variables.js"></script>
         <script src="entity_factory.js"></script>
@@ -251,8 +252,58 @@
                         fh.setCallback(function(msg)
                         {});
                         fh.read();
-                        console.log(fh.content);
+                        // FIXME does not test anything
                     }));
+            suite.add(new TestCase("path initiated by list", function(test)
+                    {
+                        var l = ["root", "user", "something"];
+                        var path = new Path(l);
+                        test.assertEquals(path.get(), l);
+                    }));
+
+            suite.add(new TestCase("path is displayable", function(test)
+                    {
+                        var l = ["root", "user", "something"];
+                        var path = new Path(l);
+                        test.assertEquals(path.display(), "root / user / something");
+                    }));
+
+            suite.add(new TestCase("path can process another path ", function(test)
+                    {
+                        var other = new Path(["sub", "path"])
+                        var l = ["root", "user", other, "something"];
+                        var path = new Path(l);
+                        test.assertEquals(path.get(), ["root", "user", "sub", "path", "something"]);
+                    }));
+
+            suite.add(new TestCase("path can navigate", function(test)
+                    {
+                        var startNode = new Node("root");
+                        var endNode = new Node("something");
+                        startNode.add(new Node("user"));
+                        startNode.getChild("user").add(endNode);
+                        var l = ["user", "something"];
+                        var path = new Path(l);
+                        test.assertEquals(path.navigate(startNode), endNode);
+                    }));
+
+            suite.add(new TestCase("path can process through navigation", function(test)
+                    {
+                        var startNode = new Node("root");
+                        var endNode = new Node("something");
+                        startNode.add(new Node("user"));
+                        startNode.getChild("user").add(endNode);
+                        var l = ["user", "something"];
+                        var path = new Path(l);
+                        var output = "";
+                        var method = function(node)
+                        {
+                            output += node.name + " ";
+                        }
+                        path.process(method, startNode);
+                        test.assertEquals(output, "user something ");
+                    }));
+
 
             suite.run([]);
         </script>
