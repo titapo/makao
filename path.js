@@ -16,6 +16,21 @@ function Path(path)
         return pathList;
     }
 
+    this.to = function(element)
+    {
+        pathList.push(element);
+    }
+
+    this.up = function()
+    {
+        return pathList.pop();
+    }
+
+    this.clear = function()
+    {
+        return pathList = [];
+    }
+
     this.navigate = function(initialNode)
     {
         var actual = initialNode;

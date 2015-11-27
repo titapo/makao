@@ -236,7 +236,7 @@
                         factory.setType("text-leaf", TextLeaf);
                         factory.setType("boolean-leaf", BooleanLeaf);
                         factory.setType("node", Node);
-                        
+
                         var list = factory.listTypenames();
                         for (var i = 0; i < list.length; ++i)
                         {
@@ -261,12 +261,26 @@
                         test.assertEquals(path.get(), l);
                     }));
 
-            suite.add(new TestCase("path is displayable", function(test)
+            suite.add(new TestCase("path is displayable, changeable, clearable", function(test)
                     {
                         var l = ["root", "user", "something"];
                         var path = new Path(l);
                         test.assertEquals(path.display(), "root / user / something");
+
+                        path.up();
+                        test.assertEquals(path.display(), "root / user");
+
+                        path.to("added");
+                        test.assertEquals(path.display(), "root / user / added");
+
+                        path.clear();
+                        test.assertEquals(path.display(), "");
+
+                        // up from top (= remove from empty list)
+                        path.up();
+                        test.assertEquals(path.display(), "");
                     }));
+
 
             suite.add(new TestCase("path can process another path ", function(test)
                     {

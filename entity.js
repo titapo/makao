@@ -122,6 +122,7 @@ function Node(name, type = "node", base = 0)
     if (!(this instanceof Node))
         return new Node(name, type, base);
 
+    var logger = new Logger("node[" + name + "]");
     Entity.call(this, name, type, base);
 
     this.children = Array();
@@ -175,7 +176,10 @@ function Node(name, type = "node", base = 0)
     {
         var index = this.getChildIndex(nodeName);
         if (index < 0)
-            g_entity_logger.info("Node.remove('" + nodeName + "'): no such child");
+        {
+            logger.info("Node.remove('" + nodeName + "'): no such child");
+            throw "ERROR";
+        }
 
         this.children.splice(i, 1);
     }

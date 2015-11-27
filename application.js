@@ -3,40 +3,34 @@
 var g_logger = new Logger("makao", "info");
 var g_context;
 var g_rootNode;
-var g_actualNode;
 var g_actionList;
 var g_baseArea;
 
 function goToNode(node)
 {
-    if (!(node instanceof Node))
-        throw "goToNode(): not a node!";
-
-    g_actualNode = node;
-    DisplayActualNode();
+    g_context.view.goTo(node);
 }
 
 function goToBase()
 {
-    goToNode(g_actualNode.base);
+    g_context.view.goUp();
 }
 
 function goToChild(childName)
 {
-    var node = g_actualNode.getChild(childName);
-    goToNode(node);
+    g_context.view.goToChild(childName);
 }
 
 function deleteChild(childName)
 {
-    var child = g_actualNode.getChild(childName);
+    var child = g_context.view.getCurrentNode().getChild(childName);
     if (child === undefined)
         throw "Child '" + childName + "' does not exist!";
 
     var form = new Form("Delete child");
     form.submit = function(values)
     {
-        g_actualNode.remove(childName);
+        g_context.view.getCurrentNode().remove(childName);
         DisplayActualNode();
         return true;
     }
@@ -48,7 +42,7 @@ function deleteChild(childName)
 
 function updateChild(childName)
 {
-    var child = g_actualNode.getChild(childName);
+    var child = g_context.view.getCurrentNode().getChild(childName);
     if (child === undefined)
         throw "Child '" + childName + "' does not exist!";
 
@@ -63,8 +57,10 @@ function updateChild(childName)
 
         if (name !== child.name)
         {
-            if (g_actualNode.getChild(name) !== undefined)
-                throw g_actualNode.name + " already has a child with name: '" + name +"'";
+            var actualNode = g_context.view.getCurrentNode();
+            if (actualNode.getChild(name) !== undefined)
+                throw actualNode.name + " already has a child with name: '" + name +"'";
+                // TODO message for the user
         }
 
         child.name = name;
@@ -119,16 +115,16 @@ function createChildEntity(identifier)
         if (name.length === 0)
             return false;
             */
-        if (g_actualNode.getChild(name) !== undefined)
-            throw g_actualNode.name + " already has a leaf with name: '" + name +"'";
-
+        var actualNode = g_context.view.getCurrentNode();
+        if (actualNode.getChild(name) !== undefined)
+            throw actualNode.name + " already has a leaf with name: '" + name +"'";
 
         for (var key in this.inputs)
         {
             entity[key] = this.inputs[key].value;
         }
 
-        g_actualNode.add(entity);
+        actualNode.add(entity);
         //refresh
         DisplayActualNode();
 
@@ -145,12 +141,12 @@ function moveUpChild(childName)
 {
     g_logger.debug("moveUpChild()");
     // check whether is it the first
-    var index = g_actualNode.getChildIndex(childName);
+    var index = g_context.view.getCurrentNode().getChildIndex(childName);
     if (index <= 0)
         return false;
 
 
-    children = g_actualNode.children;
+    children = g_context.view.getCurrentNode().children;
     var swapWith = index - 1;
     children[index] = children.splice(swapWith, 1, children[index])[0];
     DisplayActualNode();
@@ -162,12 +158,12 @@ function moveDownChild(childName)
 {
     g_logger.debug("moveDownChild()");
     // check whether is it the last
-    var index = g_actualNode.getChildIndex(childName);
-    if (index == -1 || index >= g_actualNode.children.length - 1)
+    var index = g_context.view.getCurrentNode().getChildIndex(childName);
+    if (index == -1 || index >= g_context.view.getCurrentNode().children.length - 1)
         return false;
 
 
-    children = g_actualNode.children;
+    children = g_context.view.getCurrentNode().children;
     var swapWith = index + 1;
     children[index] = children.splice(swapWith, 1, children[index])[0];
     DisplayActualNode();
@@ -177,9 +173,9 @@ function moveDownChild(childName)
 
 function generateNodeOutput()
 {
-
-    var win = new Window(g_actualNode.name + " output");
-    var field = new TextFormField("JSON output", "output", g_actualNode.generateOutput());
+    var node = g_context.view.getCurrentNode();
+    var win = new Window(node.name + " output");
+    var field = new TextFormField("JSON output", "output", node.generateOutput());
     win.setContent(field.display());
 
     var layer = new Layer("win-layer");
@@ -196,10 +192,12 @@ function loadNode()
 
         var node = createTreeFromString(json, g_context.entityFactory);
 
-        if (g_actualNode.getChild(name) !== undefined)
-            throw g_actualNode.name + " already has a leaf with name: '" + name +"'";
+        var actualNode = g_context.view.getCurrentNode();
 
-        g_actualNode.add(node);
+        if (actualNode.getChild(name) !== undefined)
+            throw actualNode.name + " already has a leaf with name: '" + name +"'";
+
+        actualNode.add(node);
         //refresh
         DisplayActualNode();
 
@@ -319,7 +317,7 @@ function Init()
     // tree generation
     g_rootNode = GenerateTree();
 
-    g_context = new Context();
+    g_context = new Context(g_rootNode);
     LoadGlobalConfig(g_context, "file:global/global.conf");
     g_context.entityFactory.setType("leaf", Leaf);
     g_context.entityFactory.setType("node", Node);
@@ -334,7 +332,8 @@ function Init()
     g_actionList = CreateActionList();
 
     g_baseArea = document.getElementById("base-area");
-    g_actualNode = g_rootNode;
+
+    g_context.view.init(g_baseArea, g_actionList)
 }
 
 function DisplayActualNode()
@@ -342,5 +341,5 @@ function DisplayActualNode()
     if (typeof g_baseArea === 'undefined')
         throw "Entity is uninitialized";
 
-    g_baseArea.innerHTML = g_actualNode.display(g_actionList);
+    g_context.view.display();
 }

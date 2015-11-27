@@ -2,11 +2,13 @@
  * this class contains contextual variables and methods
  * TODO 
  */
-function Context()
+function Context(rootNode)
 {
+    var logger = new Logger("context");
     this.entityFactory = new EntityFactory();
     this.currentForm = undefined;
     this.config = {}; // default config
+    this.view = new View(rootNode, new Path([]));
 
     this.setCurrentForm = function(form)
     {
