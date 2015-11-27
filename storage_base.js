@@ -42,4 +42,9 @@ function BrowserStorage(storageTarget, entityFactory)
         logger.info("reset storage");
         localStorage.removeItem(target);
     }
+
+    this.isEmpty = function()
+    {
+        return localStorage.getItem(target) === null || localStorage.getItem(target).length === 0;
+    }
 }

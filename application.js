@@ -264,6 +264,7 @@ function CreateActionList()
         
         if (g_context.hasStorage())
         {
+            result += g_context.getStorageName() + ":";
             result += actionLink("LOAD CHILD", "LOAD_NODE()");
             result += actionLink("STORE", "STORE_NODE()");
             result += actionLink("CLEAR STORAGE", "CLEAR_STORAGE()");

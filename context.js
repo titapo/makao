@@ -9,7 +9,8 @@ function Context(rootNode)
     this.currentForm = undefined;
     this.config = {}; // default config
     this.view = new View(rootNode, new Path([]));
-    var storage = null;
+    var storage = {};
+    var activeStorageId = "";
 
     this.setCurrentForm = function(form)
     {
@@ -40,30 +41,43 @@ function Context(rootNode)
 
     this.hasStorage = function()
     {
-        return storage !== null;
+        return Object.keys(storage).length > 0;
+    }
 
+    this.getActiveStorage = function()
+    {
+        if (!this.hasStorage())
+            throw "NO STORAGE";
+
+        return storage[activeStorageId];
     }
 
     this.store = function()
     {
-        if (!this.hasStorage())
-            throw "NO STORAGE";
-
         var node = this.view.getCurrentNode();
-        storage.storeNode(node);
+        this.getActiveStorage().storeNode(node);
     }
 
     this.load = function()
     {
-        if (!this.hasStorage())
-            throw "NO STORAGE";
+        var s = this.getActiveStorage();
+        if (s.isEmpty())
+        {
+            logger.info("storage is empty");
+            return; // nothing to do
+        }
 
-        var node = storage.loadNode();
+        var node = s.loadNode();
         this.view.loadChild(node)
     }
     this.clearStorage = function()
     {
-        storage.reset();
+        this.getActiveStorage().reset();
+    }
+
+    this.getStorageName = function()
+    {
+        return activeStorageId;
     }
 
     // @private
@@ -77,15 +91,26 @@ function Context(rootNode)
     this.refreshConfig = function()
     {
         logger.info("Config changed");
-        if (this.config['storage'] !== undefined)
-        {
-            if (this.config['storage']['type'] === 'browser-local')
-            {
-                if (this.config['storage']['name'] === undefined)
-                    this.configError('storage.name not defined!');
+        if (this.config['storages'] !== undefined)
+            this.processStorages(this.config.storages);
+    }
 
-                storage = new BrowserStorage(this.config['storage']['name'], this.entityFactory);
-            }
+    // @private
+    this.processStorages = function(storageDict)
+    {
+        logger.info("-------- procStor");
+        for (var s in storageDict)
+        {
+            if (storageDict[s].type !== 'browser-local')
+                continue;
+
+            if (storageDict[s].target === undefined)
+                this.configError('storage[' + s + '].target not defined!');
+
+
+            logger.info("-------- procStor : " + s);
+            storage[s] = new BrowserStorage(storageDict[s], this.entityFactory);
+            activeStorageId = s;
         }
     }
 
