@@ -9,6 +9,7 @@ function Context(rootNode)
     this.currentForm = undefined;
     this.config = {}; // default config
     this.view = new View(rootNode, new Path([]));
+    var storage = null;
 
     this.setCurrentForm = function(form)
     {
@@ -21,6 +22,7 @@ function Context(rootNode)
     this.setConfig = function(config)
     {
         this.config = config;
+        this.refreshConfig();
     }
 
     /**
@@ -32,6 +34,60 @@ function Context(rootNode)
         {
             this.config[attr] = config[attr];
         }
+
+        this.refreshConfig();
     }
+
+    this.hasStorage = function()
+    {
+        return storage !== null;
+
+    }
+
+    this.store = function()
+    {
+        if (!this.hasStorage())
+            throw "NO STORAGE";
+
+        var node = this.view.getCurrentNode();
+        storage.storeNode(node);
+    }
+
+    this.load = function()
+    {
+        if (!this.hasStorage())
+            throw "NO STORAGE";
+
+        var node = storage.loadNode();
+        this.view.loadChild(node)
+    }
+    this.clearStorage = function()
+    {
+        storage.reset();
+    }
+
+    // @private
+    this.configError = function(msg)
+    {
+        logger.error(msg);
+        throw "invalid config:" + msg;
+    }
+
+    // @private
+    this.refreshConfig = function()
+    {
+        logger.info("Config changed");
+        if (this.config['storage'] !== undefined)
+        {
+            if (this.config['storage']['type'] === 'browser-local')
+            {
+                if (this.config['storage']['name'] === undefined)
+                    this.configError('storage.name not defined!');
+
+                storage = new BrowserStorage(this.config['storage']['name'], this.entityFactory);
+            }
+        }
+    }
+
 }
 

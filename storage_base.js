@@ -21,21 +21,25 @@ function BrowserStorage(storageTarget, entityFactory)
         logger.error("Storage is not supported in this browser");
         throw "Storage is not supported in this browser";
     }
+    logger.info("created");
     var target = storageTarget;
     var factory = entityFactory;
 
     this.storeNode = function(node)
     {
+        logger.info("store node");
         localStorage.setItem(target, node.generateOutput());
     }
 
     this.loadNode = function()
     {
+        logger.info("load node");
         return createTreeFromString(localStorage.getItem(target), factory);
     }
 
     this.reset = function()
     {
+        logger.info("reset storage");
         localStorage.removeItem(target);
     }
 }

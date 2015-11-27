@@ -192,15 +192,7 @@ function loadNode()
 
         var node = createTreeFromString(json, g_context.entityFactory);
 
-        var actualNode = g_context.view.getCurrentNode();
-
-        if (actualNode.getChild(name) !== undefined)
-            throw actualNode.name + " already has a leaf with name: '" + name +"'";
-
-        actualNode.add(node);
-        //refresh
-        DisplayActualNode();
-
+        g_context.view.loadChild(node);
         return true;
     };
 
@@ -208,6 +200,19 @@ function loadNode()
     layer.displayForm(form);
 
     SetCurrentForm(form); // set on g_context
+}
+
+function STORE_NODE()
+{
+    g_context.store();
+}
+function LOAD_NODE()
+{
+    g_context.load();
+}
+function CLEAR_STORAGE()
+{
+    g_context.clearStorage();
 }
 
 function GenerateTree()
@@ -253,10 +258,19 @@ function CreateActionList()
 
     actions.set("node-actions", function(node)
     {
-        return actionLink("create child", "createChild()")
+        var result = actionLink("create child", "createChild()")
         + actionLink("output", "generateNodeOutput()")
         + actionLink("load children", "loadNode()");
+        
+        if (g_context.hasStorage())
+        {
+            result += actionLink("LOAD CHILD", "LOAD_NODE()");
+            result += actionLink("STORE", "STORE_NODE()");
+            result += actionLink("CLEAR STORAGE", "CLEAR_STORAGE()");
+        }
+        return result;
     });
+
 
     actions.set("child-modify", function(child)
     {
@@ -264,7 +278,6 @@ function CreateActionList()
             + actionLink("remove", "deleteChild(\"" + child.name + "\")")
             + actionLink("^", "moveUpChild(\"" + child.name + "\")")
             + actionLink("v", "moveDownChild(\"" + child.name + "\")")
-
         ;
     });
 

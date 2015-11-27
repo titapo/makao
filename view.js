@@ -76,4 +76,15 @@ function View(baseNode, path)
         return this.current;
     }
 
+    this.loadChild = function(node)
+    {
+        if (this.current.getChild(node.name) !== undefined)
+            throw this.current.name + " already has a leaf with name: '" + node.name +"'";
+
+        this.current.add(node);
+
+        //refresh
+        this.display();
+    }
+
 }
