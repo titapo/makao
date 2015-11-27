@@ -12,6 +12,7 @@
         <script src="entity_factory.js"></script>
         <script src="test.js"></script>
         <script src="file_handler.js"></script>
+        <script src="storage_base.js"></script>
         <link rel="stylesheet" type="text/css" href="basic.css" />
     </head>
     <body>
@@ -318,6 +319,18 @@
                         test.assertEquals(output, "user something ");
                     }));
 
+            suite.add(new TestCase("browser storage", function(test)
+                    {
+                        var node = new Node("root");
+                        var endNode = new Node("something");
+                        node.add(new Node("user"));
+                        node.getChild("user").add(endNode);
+
+                        var storage = new BrowserStorage("targette", factory);
+                        storage.storeNode(node);
+                         //  TODO
+                        //test.assertEquals(storage.loadNode(), node);
+                    }));
 
             suite.run([]);
         </script>
