@@ -9,7 +9,7 @@ function Context(rootNode)
     this.currentForm = undefined;
     this.config = {}; // default config
     this.view = new View(rootNode, new Path([]));
-    var storage = {};
+    var storages = {};
     var activeStorageId = "";
 
     this.setCurrentForm = function(form)
@@ -41,15 +41,19 @@ function Context(rootNode)
 
     this.hasStorage = function()
     {
-        return Object.keys(storage).length > 0;
+        return Object.keys(storages).length > 0;
     }
 
-    this.getActiveStorage = function()
+    this.getActiveStorageHandler = function()
     {
         if (!this.hasStorage())
             throw "NO STORAGE";
 
-        return storage[activeStorageId];
+        return storages[activeStorageId];
+    }
+    this.getActiveStorage = function()
+    {
+        return this.getActiveStorageHandler().storage;
     }
 
     this.store = function()
@@ -80,6 +84,11 @@ function Context(rootNode)
         return activeStorageId;
     }
 
+    this.getStoragePath = function()
+    {
+        return this.getActiveStorageHandler().path;
+    }
+
     // @private
     this.configError = function(msg)
     {
@@ -99,18 +108,25 @@ function Context(rootNode)
     this.processStorages = function(storageDict)
     {
         logger.info("-------- procStor");
-        for (var s in storageDict)
+        for (var name in storageDict)
         {
-            if (storageDict[s].type !== 'browser-local')
+            storageConf = storageDict[name];
+            if (storageConf.type !== 'browser-local')
                 continue;
 
-            if (storageDict[s].target === undefined)
-                this.configError('storage[' + s + '].target not defined!');
+            if (storageConf.target === undefined)
+                this.configError('storage[' + name + '].target not defined!');
 
 
-            logger.info("-------- procStor : " + s);
-            storage[s] = new BrowserStorage(storageDict[s], this.entityFactory);
-            activeStorageId = s;
+            logger.info("-------- procStor : " + name);
+            storages[name] = {}
+            storages[name].storage = new BrowserStorage(storageConf.target, this.entityFactory);
+            storages[name].path = new Path();
+            if (storageConf.path !== undefined)
+            {
+                storages[name].path = new Path(storageConf.path);
+            }
+            activeStorageId = name;
         }
     }
 
