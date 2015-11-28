@@ -264,14 +264,17 @@ function CreateActionList()
         
         if (g_context.hasStorage())
         {
-            result += g_context.getStorageName() + ":" + g_context.getStoragePath().display();
-            result += actionLink("LOAD CHILD", "LOAD_NODE()");
-            result += actionLink("STORE", "STORE_NODE()");
-            result += actionLink("CLEAR STORAGE", "CLEAR_STORAGE()");
+            var menu = new Menu("Storage | " + g_context.getStorageName(), default_menu);
+            menu.addStaticField("Path", "Path: " + g_context.getStoragePath().display());
+            menu.addElement("load", "LOAD_NODE()");
+            menu.addElement("store", "STORE_NODE()");
+            menu.addElement("clear", "CLEAR_STORAGE()");
+            menu.addElement("change storage", "");
+
+            result += menu.display();
         }
         return result;
     });
-
 
     actions.set("child-modify", function(child)
     {

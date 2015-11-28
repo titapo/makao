@@ -6,9 +6,9 @@
 
 body
 {
-    background-color: #113;
+    background-color: #95a5a6;
     padding: 10px;
-    font-family: "Verdana";
+    font-family: tahoma, arial, "Verdana";
 }
 a
 {
@@ -32,9 +32,8 @@ div#base-area a.link
 
 div.entity
 {
-    background-color: #224;
-    border: 1px solid #339;
-    margin: 10px;
+    background-color: #2c3e50;
+    margin: 5px;
     padding: 5px;
     min-width: 10vw;
 }
@@ -47,41 +46,42 @@ div.entity .title
 div.entity div.entity-content
 {
     padding: 10px;
-    background-color: #334;
-    color: #bbe;
+    background-color: #7c8a99;
+    color: #123;
 }
 
-a.action
+a.action,
+p.static
 {
-    padding: 5px;
+    padding: 8px 10px;
 }
 
 div.entity a.action
 {
     margin: 5px;
     text-decoration: none;
-    /*border: 1px solid #444;*/
-    background: rgba(0,0,0,0.2);
+    color: #e3e3e3;
+    font-weight: bold;
     text-align: center;
-    color: #77a;
+    background: #111235;
     display: inline-block;
     min-width: 25px;
 }
 
 div.entity a.action:hover
 {
-    background-color: #56a;
+    background-color: #141539;
     color: #ccf;
 }
 
 a.action.error
 {
-    background-color: #922;
+    background-color: #d02626;
 }
 
 a.action.ok
 {
-    background-color: #292;
+    background-color: #1b9344;
 }
 
 div#win-layer
@@ -130,12 +130,56 @@ div.window .foot
     background: #337;
 }
 
-div.window input
+div.window form input,
+div.window form textarea,
+div.window form a.action
 {
-    margin: 5px;
+    margin: 10px;
 }
 
-div.window input[type=text]
+div.window input[type=text],
+div.window form textarea
 {
-    margin: border: 1px solid #ccf;
+    padding: 5px;
+    border: 1px solid #ccf;
 }
+
+/*menu*/
+div.menu
+{
+    display: inline-block;
+    /*
+    max-height: 20px;
+    padding: 2px;
+    */
+}
+
+div.menu ul
+{
+    position:absolute;
+    height: 0;
+    overflow:hidden;
+    transition: all 1s;
+    -moz-transition: all 1s;
+    background: #2c3e50;
+    margin-left: 5px;
+}
+
+div.menu:hover ul
+{
+    height: auto;
+    z-index: 50;
+}
+
+div.menu ul li
+{
+    list-style: none;
+    padding: 2px;
+}
+
+div.menu ul li a.action
+{
+    display: block;
+    margin: 0px;
+}
+
