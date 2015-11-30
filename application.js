@@ -188,6 +188,35 @@ function CLEAR_STORAGE()
 {
     g_context.clearStorage();
 }
+function CHANGE_STORAGE()
+{
+    var form = new Form("Change Storage");
+    form.submit = function(values)
+    {
+        try
+        {
+            g_context.selectStorage(this.inputs['storage'].value);
+            DisplayActualNode();
+            return true;
+        }
+        catch(err)
+        {
+            g_logger.error(err.message);
+        }
+    }
+    var storages = g_context.getStorageDict();
+    var options = {};
+    for (var name in storages)
+    {
+        options[name] = name;
+    }
+    var selector = new RadioFormField("Storage", "storage", options);
+    form.addInput(selector);
+
+    var layer = new Layer("win-layer");
+    layer.displayForm(form);
+    SetCurrentForm(form);
+}
 
 function GenerateTree()
 {
@@ -252,7 +281,7 @@ function CreateActionList()
             menu.addElement("load", "LOAD_NODE()");
             menu.addElement("store", "STORE_NODE()");
             menu.addElement("clear", "CLEAR_STORAGE()");
-            menu.addElement("change storage", "");
+            menu.addElement("change storage", "CHANGE_STORAGE()");
 
             result += menu.display();
         }

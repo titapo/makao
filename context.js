@@ -89,6 +89,18 @@ function Context(rootNode)
         return this.getActiveStorageHandler().path;
     }
 
+    this.getStorageDict = function()
+    {
+        return storages;
+    }
+    this.selectStorage = function(name)
+    {
+        if (storages[name] === undefined)
+            throw 'there is no storage by name:' + name;
+
+        activeStorageId = name;
+    }
+
     // @private
     this.configError = function(msg)
     {
