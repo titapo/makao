@@ -48,13 +48,13 @@ function Window(title)
 
     this.getOutput = function(layerId)
     {
-        return "<div id='" + this.windowId + "'class='window'>"
-                + "<p class='title'>" + this.title + "</p>"
-                + "<div class='body'>"+ this.content + "</div>"
-                + "<div class='foot'>"
-                    + "<a class='action error' onclick='hideLayer(\"" + layerId + "\")'>close</a>"
-                + "</div>"
-            + "</div>";
+        return Tag('div',
+                Tag('p', this.title, {'class':'title'})
+                + Tag('div', this.content, {'class':'body'})
+                + Tag('div',
+                    Tag('a', 'close', {class:'action error', 'onclick':'hideLayer(\"' + layerId + '\")'}),
+                {'class':'foot'}),
+                {'id':this.windowId, 'class':'window'});
     }
 
     this.setContent = function(content)
