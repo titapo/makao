@@ -77,32 +77,6 @@ function updateChild(childName)
     SetCurrentForm(form);
 }
 
-function createChild()
-{
-    var variables = g_context.entityFactory.listTypenames();
-    var form = new Form("Create new child");
-    var options = {};
-    for (var i = 0; i < variables.length; ++i)
-    {
-        options[variables[i]] = variables[i];
-    }
-    var selector = new RadioFormField("Type", "type", options);
-    //selector.setAttribute("onclick", "alert(\"hiuhi\");");
-    form.addInput(selector);
-
-    var layer = new Layer("win-layer");
-    SetCurrentForm(form); // set on g_context
-
-    form.submit = function(values)
-    {
-       createChildEntity(this.inputs["type"].value);
-    }
-
-    layer.displayForm(form);
-
-    return;
-}
-
 function createChildEntity(identifier)
 {
     var entity = g_context.entityFactory.create(identifier);
@@ -258,8 +232,17 @@ function CreateActionList()
 
     actions.set("node-actions", function(node)
     {
-        var result = actionLink("create child", "createChild()")
-        + actionLink("output", "generateNodeOutput()")
+        var result = "";
+        var childCreation = new Menu("Create ...", default_menu);
+        var typeList = g_context.entityFactory.listTypenames();
+        for (var index in typeList)
+        {
+            var typename = typeList[index];
+            childCreation.addElement(typename, "createChildEntity(\"" + typename + "\")");
+        }
+        result += childCreation.display();
+
+        result += actionLink("output", "generateNodeOutput()")
         + actionLink("load children", "loadNode()");
         
         if (g_context.hasStorage())
