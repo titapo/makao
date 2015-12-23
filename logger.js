@@ -8,9 +8,8 @@ function getDateAndTime()
 
 function g_loggerOutMethod(component, level, message)
 {
-    console.log( getDateAndTime() + " " + component + ":" + level + " | " + message);
+    console.log(getDateAndTime() + " " + component + ":" + level + " | " + message);
 }
-
 
 
 function Logger(component)

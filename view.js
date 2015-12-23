@@ -7,13 +7,26 @@ function View(baseNode, path)
     this.base = baseNode;
     this.path = path;
     this.current = path.navigate(baseNode);
+    var baseArea = null;
     var area = null;
     var actionList = null;
     this.init = function(p_area/*layer?*/, p_actionList)
     {
-        area = p_area;
+        baseArea = p_area;
+        var domNode = document.createElement("div");
+        domNode.className = "default-area";
+        baseArea.appendChild(domNode);
+        area = domNode;
         actionList = p_actionList;
         logger.info("View initialized.");
+    }
+
+    this.createSubArea = function(identifier)
+    {
+        var domNode = document.createElement("div");
+        domNode.className = "sub-area";
+        baseArea.appendChild(domNode);
+        return domNode;
     }
 
     this.display = function()

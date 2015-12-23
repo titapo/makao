@@ -6,7 +6,7 @@
 
 body
 {
-    background-color: #95a5a6;
+    background-color: #d5e5e6;
     padding: 10px;
     font-family: "Freight Sans Small Caps", "Verdana", arial, tahoma;
 }
@@ -185,3 +185,32 @@ div.menu ul li a.action
     margin: 0px;
 }
 
+/* feedback */
+div.feedback-container
+{
+    position: fixed;
+    top: 0px;
+    right: 0px;
+}
+
+div.feedback-container div.msg
+{
+    background: #aaa;
+    padding: 10px;
+    width: 170px;
+    box-shadow: 0px 0px 4px #454;
+    margin: 10px 0px;
+    transition: all 1s;
+}
+div.feedback-container div.msg.success
+{
+    background: #91b797;
+}
+div.feedback-container div.msg.warning
+{
+    background: #cca232;
+}
+div.feedback-container div.msg.error
+{
+    background: #b79197;
+}

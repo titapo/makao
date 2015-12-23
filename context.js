@@ -9,8 +9,24 @@ function Context(rootNode)
     this.currentForm = undefined;
     this.config = {}; // default config
     this.view = new View(rootNode, new Path([]));
+    var feedbacker = undefined;
     var storages = {};
     var activeStorageId = "";
+
+    this.setFeedback = function(displayer)
+    {
+        feedbacker = new Feedback(displayer);
+    }
+    this.feedback = function(message, level = FeedbackLevel.Normal)
+    {
+       if (!(feedbacker instanceof Feedback)) 
+       {
+           logger.warning("feedback does not set");
+           return;
+       }
+
+       feedbacker.addMessage(message, level);
+    }
 
     this.setCurrentForm = function(form)
     {

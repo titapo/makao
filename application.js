@@ -32,6 +32,7 @@ function deleteChild(childName)
     {
         g_context.view.getCurrentNode().remove(childName);
         DisplayActualNode();
+        g_context.feedback("'" + childName + "' removed");
         return true;
     }
 
@@ -59,8 +60,12 @@ function updateChild(childName)
         {
             var actualNode = g_context.view.getCurrentNode();
             if (actualNode.getChild(name) !== undefined)
-                throw actualNode.name + " already has a child with name: '" + name +"'";
+            {
                 // TODO message for the user
+                var msg = actualNode.name + " already has a child with name: '" + name +"'";
+                g_context.feedback(msg, FeedbackLevel.Error);
+                throw msg;
+            }
         }
 
         child.name = name;
@@ -91,7 +96,11 @@ function createChildEntity(identifier)
             */
         var actualNode = g_context.view.getCurrentNode();
         if (actualNode.getChild(name) !== undefined)
-            throw actualNode.name + " already has a leaf with name: '" + name +"'";
+        {
+            var msg = actualNode.name + " already has a child with name: '" + name +"'";
+            g_context.feedback(msg, FeedbackLevel.Error);
+            throw msg;
+        }
 
         for (var key in this.inputs)
         {
@@ -102,6 +111,7 @@ function createChildEntity(identifier)
         //refresh
         DisplayActualNode();
 
+        g_context.feedback("New " + identifier + " created with name: " + name);
         return true;
     };
 
@@ -187,6 +197,7 @@ function LOAD_NODE()
 function CLEAR_STORAGE()
 {
     g_context.clearStorage();
+    g_context.feedback("Storage cleared");
 }
 function CHANGE_STORAGE()
 {
@@ -197,6 +208,7 @@ function CHANGE_STORAGE()
         {
             g_context.selectStorage(this.inputs['storage'].value);
             DisplayActualNode();
+            g_context.feedback("Storage changed");
             return true;
         }
         catch(err)
@@ -327,17 +339,47 @@ function LoadGlobalConfig(ctx, filename)
         }
         else
         {
-            g_logger.error("could not verify global config");
+            g_context.feedback("could not verify global config", FeedbackLevel.Error);
         }
 
-        Logger.setLogLevel(ctx.config["logLevel"])
-        g_logger.info("global config loaded");
+        Logger.setLogLevel(ctx.config["logLevel"]);
+        g_context.feedback("global configuration loaded");
         g_logger.info("load stylesheet: " + ctx.config["style"]);
         g_logger.info(document.getElementsByTagName("link").item(0).setAttribute("href", ctx.config["style"]));
 
         
     });
     fh.read();
+}
+
+function InitView(message, level)
+{
+    var feedbackArea = g_context.view.createSubArea("general-feedback");
+    feedbackArea.id = "g_feedback";
+    feedbackArea.className = "feedback-container";
+    g_context.setFeedback(function(message, level)
+            {
+                var messageNode = document.createElement("div");
+                var cls = "";
+                switch (level)
+                {
+                    case FeedbackLevel.Normal:
+                        cls = " success";
+                        break;
+                    case FeedbackLevel.Warning:
+                        cls = " warning";
+                        break;
+                    case FeedbackLevel.Error:
+                        cls = " error";
+                        break;
+                }
+                messageNode.className = "msg" + cls;
+                messageNode.innerHTML = message;
+                feedbackArea.appendChild(messageNode);
+                setTimeout(function () {
+                    feedbackArea.removeChild(messageNode)
+                }, 5000);
+            });
 }
 
 function Init()
@@ -347,7 +389,9 @@ function Init()
     g_rootNode = GenerateTree();
 
     g_context = new Context(g_rootNode);
+
     LoadGlobalConfig(g_context, "file:global/global.conf");
+
     g_context.entityFactory.setType("leaf", Leaf);
     g_context.entityFactory.setType("node", Node);
     g_context.entityFactory.setType("text-leaf", TextLeaf);
@@ -357,12 +401,13 @@ function Init()
     g_context.entityFactory.setType("enum-leaf", EnumLeaf);
     */
 
-    // actions for tree handling/display
-    g_actionList = CreateActionList();
+    g_baseArea = document.getElementById("base-area"); // base area
+    g_actionList = CreateActionList(); // actions for tree handling/display
+    g_context.view.init(g_baseArea, g_actionList);
 
-    g_baseArea = document.getElementById("base-area");
+    InitView();
 
-    g_context.view.init(g_baseArea, g_actionList)
+
 }
 
 function DisplayActualNode()
