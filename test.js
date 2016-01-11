@@ -36,7 +36,7 @@ function TestCase(name, method)
             throw "Test case: '" + this.name + "' does not runned already!";
 
 
-        var color = "#3c3";
+        var color = "#383";
         if (this.fails !== 0)
             color = "#c33";
         document.write("<div style='color:"+color+";'> " + this.name + " [ " + (this.fails === 0?"PASSED":"FAILED")+ " ] </div>");
@@ -124,6 +124,7 @@ function TestSuite(name)
 
     this.run = function(casesToRun = [])
     {
+        document.write("<br /><div style='color:"+color+";'> ### test suite: " + this.name + " </div>");
         var cases = [];
         if (casesToRun.length > 0)
         {
@@ -161,8 +162,8 @@ function TestSuite(name)
 
         var color = "#c33";
         if (failed === false)
-            color = "#3c3";
+            color = "#383";
 
-        document.write("<br /><div style='color:"+color+";'> ### test suite result: " + this.name + " (" + numOfRunnedCases + " test case runned) ---- [ " + (failed === false?"PASSED":"FAILED")+" ] </div>");
+        document.write("<br /><div style='color:"+color+";'> ### test suite result: " + this.name + " (" + numOfRunnedCases + " test case runned) ---- [ " + (failed === false?"PASSED":"FAILED")+" ] </div><br />");
     }
 }
