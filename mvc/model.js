@@ -38,6 +38,8 @@ Model.prototype = {
     },
     getService: function(serviceId)
     {
+        if (this.services[serviceId] === undefined)
+            throw "Nonexisting service '" + serviceId + "'requested."
         return this.services[serviceId];
     },
     getNumberOfObservers: function()

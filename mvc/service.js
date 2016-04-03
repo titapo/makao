@@ -1,19 +1,15 @@
-function Service()
-{}
-
-Service.prototype = {
-    model: null,
-    serviceName: "service",
-    _init: function(name)
+class Service
+{
+    constructor(name)
     {
+        this.model = null;
         this.serviceName = name;
-    },
-    changed: function()
+    }
+
+    changed()
     {
         console.log(this.serviceName + " service changed");
         if (this.model !== null)
             this.model.notify();
     }
 }
-
-
