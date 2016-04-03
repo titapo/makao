@@ -4,11 +4,12 @@ class Service
     {
         this.model = null;
         this.serviceName = name;
+        this.logger = new Logger("srv-" + name)
     }
 
     changed()
     {
-        console.log(this.serviceName + " service changed");
+        this.logger.debug(this.serviceName + " service changed");
         if (this.model !== null)
             this.model.notify();
     }
